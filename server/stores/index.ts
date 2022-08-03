@@ -1,10 +1,13 @@
 import type { Request } from "express";
+import type stream from "stream";
+import { LocalStore } from "./local-store";
 
-export class Store {
-  put(user: string, repo: string, oid: string, req: Request) {
-    throw new Error("Can not use put from Store class");
-  }
-  get(user: string, repo: string, oid: string, req: Request) {
-    throw new Error("Can not use get from Store class");
-  }
+export interface Store {
+  put(user: string, repo: string, oid: string, req: Request): void;
+  get(user: string, repo: string, oid: string): stream.Readable;
+  getFileSize(user: string, repo: string, oid: string): number;
 }
+
+export const getStore = (): Store => {
+  return LocalStore;
+};

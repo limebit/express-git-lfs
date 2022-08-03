@@ -1,5 +1,6 @@
 import type { Express, Request, Response } from "express";
 import { z } from "zod";
+import { getStore } from "../stores";
 import { validateZodSchema } from "../utils/zod-middleware";
 
 const verifyRouteSchema = z.object({
@@ -22,10 +23,12 @@ const handleBatchRequest = (req: Request, res: Response) => {
 
   const { user, repo } = req.params as reqType["params"];
 
-  // console.log(oid, size, user, repo);
+  const store = getStore();
 
-  // res.sendStatus(422).end();
-  res.set("LFS-Authenticate", 'Basic realm="Git LFS"');
+  const fileSize = store.getFileSize(user, repo, oid);
+
+  if (fileSize !== size) return res.status(422).end();
+
   return res.status(200).end();
 };
 
