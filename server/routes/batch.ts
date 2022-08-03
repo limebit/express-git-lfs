@@ -1,6 +1,6 @@
 import type { Express, Request, Response } from "express";
 import { z } from "zod";
-import { Store } from "../stores";
+import { getUploadAction } from "../utils";
 import { validateZodSchema } from "../utils/zod-middleware";
 
 const batchRouteSchema = z.object({
@@ -47,13 +47,10 @@ const handleBatchRequest = (req: Request, res: Response) => {
           size: object.size,
           authenticated: true,
           actions: {
-            upload: Store.getUploadAction(user, repo, object.oid, object.size),
+            upload: getUploadAction(user, repo, object.oid, object.size),
           },
         })),
       };
-      console.log(new Date().toLocaleString());
-      console.log(JSON.stringify(body));
-      console.log();
       return res.status(200).json(body).end();
     case "download":
       break;

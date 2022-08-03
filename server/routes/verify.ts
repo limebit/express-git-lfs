@@ -22,7 +22,7 @@ const handleBatchRequest = (req: Request, res: Response) => {
 
   const { user, repo } = req.params as reqType["params"];
 
-  console.log(oid, size, user, repo);
+  // console.log(oid, size, user, repo);
 
   // res.sendStatus(422).end();
   res.set("LFS-Authenticate", 'Basic realm="Git LFS"');

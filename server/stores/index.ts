@@ -1,12 +1,10 @@
+import type { Request } from "express";
+
 export class Store {
-  static getUploadAction(
-    user: string,
-    repo: string,
-    oid: string,
-    size: number
-  ) {
-    return {
-      href: `http://localhost:3000/${user}/${repo}/objects/${oid}`,
-    };
+  put(user: string, repo: string, oid: string, req: Request) {
+    throw new Error("Can not use put from Store class");
+  }
+  get(user: string, repo: string, oid: string, req: Request) {
+    throw new Error("Can not use get from Store class");
   }
 }

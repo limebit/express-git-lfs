@@ -8,6 +8,7 @@ export const app = express();
 app.use(
   express.json({ type: ["application/vnd.git-lfs+json", "application/json"] })
 );
+app.use(express.text());
 
 batchRoute(app);
 objectsRoute(app);
