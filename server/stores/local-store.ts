@@ -31,7 +31,12 @@ export const LocalStore: LocalStoreType = {
   getFilePath(user: string, repo: string, oid: string) {
     const dataFolder = getRequiredEnvVar("DATA_FOLDER");
 
-    const filePath = path.join(dataFolder, user, repo, oid);
+    const pathWithoutFile = path.join(dataFolder, user, repo);
+
+    if (!fs.existsSync(pathWithoutFile))
+      fs.mkdirSync(pathWithoutFile, { recursive: true });
+
+    const filePath = path.join(pathWithoutFile, oid);
 
     return filePath;
   },
