@@ -22,13 +22,7 @@ const handleBatchRequest = (req: Request, res: Response) => {
 
   type reqType = z.infer<typeof batchRouteSchema>;
 
-  const {
-    operation,
-    transfers,
-    ref,
-    objects,
-    hash_algo: hashAlgo,
-  } = req.body as reqType["body"];
+  const { operation, transfers, objects } = req.body as reqType["body"];
 
   const { user, repo } = req.params as reqType["params"];
 
