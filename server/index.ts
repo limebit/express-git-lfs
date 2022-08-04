@@ -1,9 +1,4 @@
-import express from "express";
-
-const app = express();
-
-app.get("/", (_req, res) => {
-  res.send("test");
-});
+import { app } from "./servers/express";
+import "dotenv/config";
 
 app.listen(3000);
