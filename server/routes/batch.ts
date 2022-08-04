@@ -6,10 +6,10 @@ import { validateZodSchema } from "../utils/zod-middleware";
 const batchRouteSchema = z.object({
   body: z.object({
     operation: z.enum(["upload", "download"]),
-    transfers: z.string().array().nullable(),
-    ref: z.object({ name: z.string() }).nullable(),
+    transfers: z.string().array().optional(),
+    ref: z.object({ name: z.string() }).optional(),
     objects: z.object({ oid: z.string(), size: z.number() }).array(),
-    hash_algo: z.string().nullable(),
+    hash_algo: z.string().optional(),
   }),
   params: z.object({
     user: z.string(),
@@ -26,7 +26,7 @@ const handleBatchRequest = (req: Request, res: Response) => {
 
   const { user, repo } = req.params as reqType["params"];
 
-  if (!transfers?.includes("basic")) {
+  if (transfers && !transfers?.includes("basic")) {
     return res.sendStatus(422);
   }
 
