@@ -6,10 +6,10 @@ import { validateZodSchema } from "../utils/zod-middleware";
 const batchRouteSchema = z.object({
   body: z.object({
     operation: z.enum(["upload", "download"]),
-    transfers: z.string().array().optional(),
-    ref: z.object({ name: z.string() }).optional(),
+    transfers: z.string().array().nullish(),
+    ref: z.object({ name: z.string() }).nullish(),
     objects: z.object({ oid: z.string(), size: z.number() }).array(),
-    hash_algo: z.string().optional(),
+    hash_algo: z.string().nullish(),
   }),
   params: z.object({
     user: z.string(),
