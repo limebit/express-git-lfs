@@ -1,40 +1,52 @@
 import type { Express, Request, Response } from "express";
 import { z } from "zod";
 import { validateZodSchema } from "../../utils/zod-middleware";
+import { prisma } from "../../utils/prisma";
+import { hashPassword } from "../../utils/crypt";
+import { validateApiKey } from "../../utils/api-key-middleware";
 
-let users: { username: string; password: string; sshKeys: string[] }[] = [
-  { username: "OFranke", password: "Isch hab koa Passwort", sshKeys: [] },
-];
+const handleGetAllUsers = async (_req: Request, res: Response) => {
+  const rawUsers = await prisma.user.findMany({
+    select: { id: true, username: true, sshKeys: { select: { key: true } } },
+  });
 
-const handleGetAllUsers = (_req: Request, res: Response) => {
-  console.log(users);
+  const users = rawUsers.map((user) => ({
+    ...user,
+    sshKeys: user.sshKeys.map((key) => key.key),
+  }));
 
   return res.status(200).send({ users: users });
 };
 
 const handleGetUserSchema = z.object({
   params: z.object({
-    user: z.string(),
+    userId: z.string(),
   }),
 });
 
-const handleGetUser = (req: Request, res: Response) => {
+const handleGetUser = async (req: Request, res: Response) => {
   type reqType = z.infer<typeof handleGetUserSchema>;
 
-  const { user } = req.params as reqType["params"];
+  const { userId } = req.params as reqType["params"];
 
-  const userProfile = users.find((element) => element.username == user);
+  const userProfile = await prisma.user.findFirst({
+    where: { id: userId },
+    select: { id: true, username: true, sshKeys: { select: { key: true } } },
+  });
 
   if (!userProfile) return res.sendStatus(404);
 
-  console.log(users);
-
-  return res.status(200).send({ user: userProfile });
+  return res.status(200).send({
+    user: {
+      ...userProfile,
+      sshKeys: userProfile.sshKeys.map((key) => key.key),
+    },
+  });
 };
 
 const handlePutUserSchema = z.object({
   params: z.object({
-    user: z.string(),
+    userId: z.string(),
   }),
   body: z.object({
     username: z.string().nullish(),
@@ -43,22 +55,35 @@ const handlePutUserSchema = z.object({
   }),
 });
 
-const handlePutUser = (req: Request, res: Response) => {
+const handlePutUser = async (req: Request, res: Response) => {
   type reqType = z.infer<typeof handlePutUserSchema>;
 
-  const { user } = req.params as reqType["params"];
+  const { userId } = req.params as reqType["params"];
 
   const { username, password, sshKeys } = req.body as reqType["body"];
 
-  const userIndex = users.findIndex((element) => element.username == user);
+  const user = await prisma.user.findFirst({
+    where: { id: userId },
+    select: { id: true },
+  });
 
-  if (userIndex === -1 || !users[userIndex]) return res.sendStatus(404);
+  if (!user) return res.sendStatus(404);
 
-  if (username) users[userIndex]!.username = username;
-  if (password) users[userIndex]!.password = password;
-  if (sshKeys) users[userIndex]!.sshKeys = sshKeys;
+  const hashedPassword = password ? await hashPassword(password) : undefined;
 
-  console.log(users);
+  await prisma.user.update({
+    where: { id: user.id },
+    data: {
+      username: username ?? undefined,
+      password: hashedPassword ?? undefined,
+      sshKeys: sshKeys
+        ? {
+            deleteMany: {},
+            create: sshKeys.map((key) => ({ key })),
+          }
+        : undefined,
+    },
+  });
 
   return res.sendStatus(200);
 };
@@ -71,40 +96,50 @@ const handleCreateUserSchema = z.object({
   }),
 });
 
-const handleCreateUser = (req: Request, res: Response) => {
+const handleCreateUser = async (req: Request, res: Response) => {
   type reqType = z.infer<typeof handleCreateUserSchema>;
 
   const { username, password, sshKeys } = req.body as reqType["body"];
 
-  const userIndex = users.findIndex((element) => element.username == username);
-
-  if (userIndex !== -1) return res.sendStatus(409);
-
-  users.push({
-    username: username,
-    password: password,
-    sshKeys: sshKeys ?? [],
+  const userId = await prisma.user.findFirst({
+    where: { username: username },
+    select: { id: true },
   });
 
-  console.log(users);
+  if (userId) return res.sendStatus(409);
+
+  const hashedPassword = await hashPassword(password);
+
+  await prisma.user.create({
+    data: {
+      username: username,
+      password: hashedPassword,
+      sshKeys: sshKeys
+        ? { create: sshKeys.map((key) => ({ key })) }
+        : undefined,
+    },
+  });
 
   res.sendStatus(200);
 };
 
 export const usersRoute = (app: Express) => {
-  app.get("/mgmt/users", handleGetAllUsers);
+  app.get("/mgmt/users", validateApiKey, handleGetAllUsers);
   app.get(
-    "/mgmt/users/:user",
+    "/mgmt/users/:userId",
+    validateApiKey,
     validateZodSchema(handleGetUserSchema),
     handleGetUser
   );
   app.put(
-    "/mgmt/users/:user",
+    "/mgmt/users/:userId",
+    validateApiKey,
     validateZodSchema(handlePutUserSchema),
     handlePutUser
   );
   app.post(
     "/mgmt/users",
+    validateApiKey,
     validateZodSchema(handleCreateUserSchema),
     handleCreateUser
   );
