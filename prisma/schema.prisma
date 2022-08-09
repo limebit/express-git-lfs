@@ -14,12 +14,12 @@ model User {
   id       String   @id @default(uuid())
   username String   @unique
   password String
-  sshKeys  sshKey[]
+  sshKeys  SshKey[]
 }
 
-model sshKey {
+model SshKey {
   id     String @id @default(uuid())
   userId String
-  User   User   @relation(fields: [userId], references: [id])
+  user   User   @relation(fields: [userId], references: [id])
   key    String
 }
