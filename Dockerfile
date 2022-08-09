@@ -1,6 +1,7 @@
 FROM node:16-bullseye-slim as base
 
 ENV NODE_ENV=production
+ENV DATABASE_URL=file:/service/data/database.db
 
 RUN apt-get update && apt-get install -y openssl
 
@@ -29,8 +30,6 @@ ADD . .
 RUN yarn run prisma:generate
 RUN yarn run build
 
-RUN yarn run prisma:db:deploy
-
 FROM base
 
 WORKDIR /service
@@ -40,6 +39,6 @@ COPY --from=production-deps /service/node_modules /service/node_modules
 COPY --from=build /service/node_modules/.prisma /service/node_modules/.prisma
 COPY --from=build /service/build /service/build
 
-RUN yarn run prisma:generate
+ADD entrypoint.sh /
 
-CMD ["yarn", "run", "start"]
+CMD ["/entrypoint.sh"]
