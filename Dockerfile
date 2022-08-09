@@ -2,6 +2,8 @@ FROM node:16-bullseye-slim as base
 
 ENV NODE_ENV=production
 
+RUN apt-get update && apt-get install -y openssl
+
 FROM base as deps
 
 WORKDIR /service
@@ -22,8 +24,12 @@ FROM base as build
 WORKDIR /service
 
 COPY --from=deps /service/node_modules /service/node_modules
+ADD prisma .
 ADD . .
+RUN yarn run prisma:generate
 RUN yarn run build
+
+RUN yarn run prisma:db:deploy
 
 FROM base
 
@@ -31,8 +37,9 @@ WORKDIR /service
 
 ADD . .
 COPY --from=production-deps /service/node_modules /service/node_modules
+COPY --from=build /service/node_modules/.prisma /service/node_modules/.prisma
 COPY --from=build /service/build /service/build
 
-EXPOSE 3000
+RUN yarn run prisma:generate
 
 CMD ["yarn", "run", "start"]
