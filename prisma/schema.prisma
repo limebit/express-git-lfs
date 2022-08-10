@@ -18,8 +18,8 @@ model User {
 }
 
 model SshKey {
-  id     String @id @default(uuid())
+  id     Int    @id @default(autoincrement())
   userId String
-  user   User   @relation(fields: [userId], references: [id])
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
   key    String
 }

@@ -4,8 +4,8 @@ services:
     build: .
     ports:
       - 8000:8000
-    env_file:
-      - .env
     volumes:
       - "./data:/service/data"
+    environment:
+      - API_KEY=secure_api_key
     tty: true
