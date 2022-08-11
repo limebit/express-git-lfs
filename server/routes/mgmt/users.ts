@@ -18,6 +18,41 @@ const handleGetAllUsers = async (_req: Request, res: Response) => {
   return res.status(200).send({ users: users });
 };
 
+const handleCreateUserSchema = z.object({
+  body: z.object({
+    username: z.string(),
+    password: z.string(),
+    sshKeys: z.string().array().nullish(),
+  }),
+});
+
+const handleCreateUser = async (req: Request, res: Response) => {
+  type reqType = z.infer<typeof handleCreateUserSchema>;
+
+  const { username, password, sshKeys } = req.body as reqType["body"];
+
+  const userId = await prisma.user.findFirst({
+    where: { username: username },
+    select: { id: true },
+  });
+
+  if (userId) return res.sendStatus(409);
+
+  const hashedPassword = await hashPassword(password);
+
+  await prisma.user.create({
+    data: {
+      username: username,
+      password: hashedPassword,
+      sshKeys: sshKeys
+        ? { create: sshKeys.map((key) => ({ key })) }
+        : undefined,
+    },
+  });
+
+  return res.sendStatus(200);
+};
+
 const handleGetUserSchema = z.object({
   params: z.object({
     userId: z.string(),
@@ -88,43 +123,37 @@ const handlePutUser = async (req: Request, res: Response) => {
   return res.sendStatus(200);
 };
 
-const handleCreateUserSchema = z.object({
-  body: z.object({
-    username: z.string(),
-    password: z.string(),
-    sshKeys: z.string().array().nullish(),
+const handleDeleteUserSchema = z.object({
+  params: z.object({
+    userId: z.string(),
   }),
 });
 
-const handleCreateUser = async (req: Request, res: Response) => {
-  type reqType = z.infer<typeof handleCreateUserSchema>;
+export const handleDeleteUser = async (req: Request, res: Response) => {
+  type reqType = z.infer<typeof handleDeleteUserSchema>;
 
-  const { username, password, sshKeys } = req.body as reqType["body"];
+  const { userId } = req.params as reqType["params"];
 
-  const userId = await prisma.user.findFirst({
-    where: { username: username },
+  const user = await prisma.user.findFirst({
+    where: { id: userId },
     select: { id: true },
   });
 
-  if (userId) return res.sendStatus(409);
+  if (!user) return res.sendStatus(404);
 
-  const hashedPassword = await hashPassword(password);
+  await prisma.user.delete({ where: { id: user.id } });
 
-  await prisma.user.create({
-    data: {
-      username: username,
-      password: hashedPassword,
-      sshKeys: sshKeys
-        ? { create: sshKeys.map((key) => ({ key })) }
-        : undefined,
-    },
-  });
-
-  res.sendStatus(200);
+  return res.sendStatus(200);
 };
 
 export const usersRoute = (app: Express) => {
   app.get("/mgmt/users", validateApiKey, handleGetAllUsers);
+  app.post(
+    "/mgmt/users",
+    validateApiKey,
+    validateZodSchema(handleCreateUserSchema),
+    handleCreateUser
+  );
   app.get(
     "/mgmt/users/:userId",
     validateApiKey,
@@ -137,10 +166,10 @@ export const usersRoute = (app: Express) => {
     validateZodSchema(handlePutUserSchema),
     handlePutUser
   );
-  app.post(
-    "/mgmt/users",
+  app.delete(
+    "/mgmt/users/:userId",
     validateApiKey,
-    validateZodSchema(handleCreateUserSchema),
-    handleCreateUser
+    validateZodSchema(handleDeleteUserSchema),
+    handleDeleteUser
   );
 };
