@@ -1,5 +1,6 @@
 import type { Response, Request, NextFunction } from "express";
 import { verifyJWT } from "../authenticators/jwt";
+import type { JWTPayload } from "../../types";
 
 export const validateJWT =
   (action: "upload" | "download" | "verify") =>
@@ -20,7 +21,7 @@ export const validateJWT =
 
     if (bearer[0] != "Bearer" || !token) return res.sendStatus(403);
 
-    const credentials = verifyJWT(token);
+    const credentials = verifyJWT<JWTPayload>(token);
 
     if (!credentials.isVerified || !credentials.payload)
       return res.sendStatus(403);

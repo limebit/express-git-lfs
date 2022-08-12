@@ -1,6 +1,6 @@
 import type { Express, Request, Response } from "express";
 import { z } from "zod";
-import { getAuthenticator } from "../authenticators";
+import { getAuthenticator, setMissingAuthHeaders } from "../authenticators";
 import {
   getDownloadAction,
   getUploadAction,
@@ -31,9 +31,24 @@ const handleBatchRequest = async (req: Request, res: Response) => {
 
   const { gitUser, repo } = req.params as reqType["params"];
 
-  const authenticator = getAuthenticator();
+  const authorizationHeader = req.header("Authorization");
 
-  const authorized = await authenticator.checkAuthorization(req, res);
+  if (!authorizationHeader) {
+    setMissingAuthHeaders(res);
+    return res.status(401).end();
+  }
+
+  const authenticator = getAuthenticator(authorizationHeader);
+
+  if (!authenticator) {
+    setMissingAuthHeaders(res);
+    return res.status(401).end();
+  }
+
+  const authorized = await authenticator.checkAuthorization(
+    res,
+    authorizationHeader
+  );
 
   if (!authorized) return res.status(401).end();
 

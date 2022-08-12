@@ -143,6 +143,13 @@
     "@types/mime" "*"
     "@types/node" "*"
 
+"@types/ssh2@^1.11.5":
+  version "1.11.5"
+  resolved "https://registry.yarnpkg.com/@types/ssh2/-/ssh2-1.11.5.tgz#b669c97fa4f9dfd7193c4750e87eaabffad0ae9d"
+  integrity sha512-RaBsPKr+YP/slH8iR7XfC7chyomU+V57F/gJ5cMSP2n6/YWKVmeRLx7lrkgw4YYLpEW5lXLAdfZJqGo0PXboSA==
+  dependencies:
+    "@types/node" "*"
+
 "@types/strip-bom@^3.0.0":
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/@types/strip-bom/-/strip-bom-3.0.0.tgz#14a8ec3956c2e81edb7520790aecf21c290aebd2"

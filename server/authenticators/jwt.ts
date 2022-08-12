@@ -1,28 +1,29 @@
 import jwt from "jsonwebtoken";
 import { getEnvVarWithDefault, getRequiredEnvVar } from "../utils";
-import type { JWTPayload } from "../../types";
 
 export const getExpiresIn = () => {
   return parseInt(getEnvVarWithDefault("JWT_EXPIRES_IN", "900"));
 };
 
-const getJWTSecret = () => {
+export const getJWTSecret = () => {
   return getRequiredEnvVar("JWT_SECRET");
 };
 
-export const generateJWT = ({ gitUser, repo, action, oid }: JWTPayload) => {
+export const generateJWT = <T extends string | object | Buffer>(payload: T) => {
   const secret = getJWTSecret();
 
-  return jwt.sign({ gitUser, repo, action, oid }, secret, {
+  return jwt.sign(payload, secret, {
     expiresIn: getExpiresIn(),
   });
 };
 
-export const verifyJWT = (token: string) => {
+export const verifyJWT = <T extends string | object | Buffer>(
+  token: string
+) => {
   const secret = getJWTSecret();
 
   try {
-    const payload = jwt.verify(token, secret) as JWTPayload;
+    const payload = jwt.verify(token, secret) as T;
 
     return { isVerified: true, payload };
   } catch {

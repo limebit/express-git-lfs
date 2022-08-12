@@ -1,28 +1,13 @@
 import { prisma } from "../utils/prisma";
-import type { Authenticator } from ".";
+import { Authenticator, setMissingAuthHeaders } from ".";
 import { validatePassword } from "../utils/crypt";
-import type { Response } from "express";
 
-interface BasicAuthenticatorInterface extends Authenticator {
-  setHeaders: (res: Response) => void;
-}
-
-export const BasicAuthenticator: BasicAuthenticatorInterface = {
-  setHeaders(res) {
-    res.set("LFS-Authenticate", 'Basic realm="Git LFS"');
-  },
-  async checkAuthorization(req, res) {
-    const authorizationHeader = req.header("Authorization");
-
-    if (!authorizationHeader) {
-      this.setHeaders(res);
-      return false;
-    }
-
+export const BasicAuthenticator: Authenticator = {
+  async checkAuthorization(res, authorizationHeader) {
     const authorization = authorizationHeader.split(" ");
 
     if (authorization[0] != "Basic" || !authorization[1]) {
-      this.setHeaders(res);
+      setMissingAuthHeaders(res);
       return false;
     }
 
@@ -31,7 +16,7 @@ export const BasicAuthenticator: BasicAuthenticatorInterface = {
       .split(":");
 
     if (!usernamePassword[0] || !usernamePassword[1]) {
-      this.setHeaders(res);
+      setMissingAuthHeaders(res);
       return false;
     }
 
@@ -40,14 +25,14 @@ export const BasicAuthenticator: BasicAuthenticatorInterface = {
     });
 
     if (!user) {
-      this.setHeaders(res);
+      setMissingAuthHeaders(res);
       return false;
     }
 
     const isValid = await validatePassword(usernamePassword[1], user.password);
 
     if (!isValid) {
-      this.setHeaders(res);
+      setMissingAuthHeaders(res);
       return false;
     }
 
