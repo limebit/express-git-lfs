@@ -1,4 +1,4 @@
-import type { Request, Response } from "express";
+import type { Response } from "express";
 import { BasicAuthenticator } from "./basic-authenticator";
 import { SSHAuthenticator } from "./ssh-authenticator";
 

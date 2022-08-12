@@ -1,6 +1,6 @@
 import type { Express, Request, Response } from "express";
 import { z } from "zod";
-import { getAuthenticator, setMissingAuthHeaders } from "../authenticators";
+import { validateAuthorization } from "../utils/auth-middleware";
 import {
   getDownloadAction,
   getUploadAction,
@@ -30,27 +30,6 @@ const handleBatchRequest = async (req: Request, res: Response) => {
   const { operation, transfers, objects } = req.body as reqType["body"];
 
   const { gitUser, repo } = req.params as reqType["params"];
-
-  const authorizationHeader = req.header("Authorization");
-
-  if (!authorizationHeader) {
-    setMissingAuthHeaders(res);
-    return res.status(401).end();
-  }
-
-  const authenticator = getAuthenticator(authorizationHeader);
-
-  if (!authenticator) {
-    setMissingAuthHeaders(res);
-    return res.status(401).end();
-  }
-
-  const authorized = await authenticator.checkAuthorization(
-    res,
-    authorizationHeader
-  );
-
-  if (!authorized) return res.status(401).end();
 
   if (transfers && !transfers?.includes("basic")) {
     return res.sendStatus(422);
@@ -85,6 +64,7 @@ export const batchRoute = (app: Express) => {
   app.post(
     "/:gitUser/:repo/objects/batch",
     validateZodSchema(batchRouteSchema),
+    validateAuthorization,
     handleBatchRequest
   );
 };

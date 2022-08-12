@@ -1,5 +1,5 @@
 import ssh2 from "ssh2";
-import type { AuthContext, Connection } from "ssh2";
+import type { AuthContext } from "ssh2";
 import { getHost, getPort, getProtocol, getRequiredEnvVar } from "../utils";
 import fs from "fs";
 import { SSHAuthenticator } from "../authenticators/ssh-authenticator";
@@ -39,7 +39,7 @@ export const sshServer = new ssh2.Server(
         client.on("session", (accept) => {
           const session = accept();
 
-          session.on("exec", (accept, reject, info) => {
+          session.on("exec", (accept, _, info) => {
             const stream = accept();
 
             const command = info.command;
