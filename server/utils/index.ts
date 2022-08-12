@@ -21,13 +21,10 @@ export const getProtocol = () => {
   return getEnvVarWithDefault("PROTOCOL", "http");
 };
 
-export const getUploadAction = (user: string, repo: string, oid: string) => {
-  const host = getEnvVarWithDefault("HOST", "localhost");
-  const protocol = getProtocol();
-
-  return {
-    href: `${protocol}://${host}:3000/${user}/${repo}/objects/${oid}`,
-  };
+export const getPort = () => {
+  return parseInt(getEnvVarWithDefault("PORT", "8000"));
 };
 
-export const getDownloadAction = getUploadAction;
+export const getHost = () => {
+  return getEnvVarWithDefault("HOST", "localhost");
+};

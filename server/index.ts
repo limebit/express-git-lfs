@@ -1,7 +1,7 @@
 import { app } from "./servers/express";
 import "dotenv/config";
-import { getEnvVarWithDefault } from "./utils";
+import { getPort } from "./utils";
 
-const port = parseInt(getEnvVarWithDefault("PORT", "8000"));
+const port = getPort();
 
 app.listen(port);

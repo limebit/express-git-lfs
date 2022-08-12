@@ -5,22 +5,22 @@ import path from "path";
 import type { Store } from ".";
 
 interface LocalStoreType extends Store {
-  getFilePath(user: string, repo: string, oid: string): string;
+  getFilePath(gitUser: string, repo: string, oid: string): string;
 }
 
 export const LocalStore: LocalStoreType = {
-  put(user: string, repo: string, oid: string, req: Request) {
-    const filePath = this.getFilePath(user, repo, oid);
+  put(gitUser: string, repo: string, oid: string, req: Request) {
+    const filePath = this.getFilePath(gitUser, repo, oid);
 
     req.pipe(fs.createWriteStream(filePath));
   },
-  get(user: string, repo: string, oid: string) {
-    const filePath = this.getFilePath(user, repo, oid);
+  get(gitUser: string, repo: string, oid: string) {
+    const filePath = this.getFilePath(gitUser, repo, oid);
 
     return fs.createReadStream(filePath);
   },
-  getFileSize(user: string, repo: string, oid: string) {
-    const filePath = this.getFilePath(user, repo, oid);
+  getFileSize(gitUser: string, repo: string, oid: string) {
+    const filePath = this.getFilePath(gitUser, repo, oid);
 
     if (!fs.existsSync(filePath)) return -1;
 
@@ -28,10 +28,10 @@ export const LocalStore: LocalStoreType = {
 
     return stats.size;
   },
-  getFilePath(user: string, repo: string, oid: string) {
+  getFilePath(gitUser: string, repo: string, oid: string) {
     const dataFolder = getRequiredEnvVar("DATA_FOLDER");
 
-    const pathWithoutFile = path.join(dataFolder, user, repo);
+    const pathWithoutFile = path.join(dataFolder, gitUser, repo);
 
     if (!fs.existsSync(pathWithoutFile))
       fs.mkdirSync(pathWithoutFile, { recursive: true });

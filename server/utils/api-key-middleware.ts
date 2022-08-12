@@ -15,7 +15,7 @@ export const validateApiKey = async (
 
   const token = bearer[1];
 
-  if (!token) return res.sendStatus(403);
+  if (bearer[0] != "Bearer" || !token) return res.sendStatus(403);
 
   const tokenBuffer = Buffer.from(token);
 
