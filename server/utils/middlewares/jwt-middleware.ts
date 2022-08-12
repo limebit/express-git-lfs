@@ -1,6 +1,6 @@
 import type { Response, Request, NextFunction } from "express";
-import { verifyJWT } from "../authenticators/jwt";
-import type { JWTPayload } from "../../types";
+import { verifyJWT } from "../jwt";
+import type { JWTPayload } from "../../../types";
 
 export const validateJWT =
   (action: "upload" | "download" | "verify") =>

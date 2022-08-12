@@ -1,13 +1,10 @@
 import { prisma } from "../utils/prisma";
 import { utils } from "ssh2";
 import { Authenticator, setMissingAuthHeaders } from ".";
-import { generateJWT, verifyJWT } from "./jwt";
+import { verifyJWT } from "../utils/jwt";
 
 interface SSHAuthenticatorInterface extends Authenticator {
-  checkSSHAuthentication: (
-    signature: Buffer,
-    blob: Buffer
-  ) => Promise<{ isAuthorized: boolean; token?: string }>;
+  checkSSHAuthentication: (signature: Buffer, blob: Buffer) => Promise<boolean>;
 }
 
 export const SSHAuthenticator: SSHAuthenticatorInterface = {
@@ -39,10 +36,8 @@ export const SSHAuthenticator: SSHAuthenticatorInterface = {
       })
     );
 
-    if (!user) return { isAuthorized: false };
+    if (!user) return false;
 
-    const token = generateJWT({ isAuthorized: true });
-
-    return { isAuthorized: true, token };
+    return true;
   },
 };

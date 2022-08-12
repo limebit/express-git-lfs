@@ -1,9 +1,9 @@
 import type { Express, Request, Response } from "express";
 import { z } from "zod";
-import { validateZodSchema } from "../../utils/zod-middleware";
+import { validateZodSchema } from "../../utils/middlewares/zod-middleware";
 import { prisma } from "../../utils/prisma";
 import { hashPassword } from "../../utils/crypt";
-import { validateApiKey } from "../../utils/api-key-middleware";
+import { validateApiKey } from "../../utils/middlewares/api-key-middleware";
 
 const handleGetAllUsers = async (_req: Request, res: Response) => {
   const rawUsers = await prisma.user.findMany({

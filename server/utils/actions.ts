@@ -1,5 +1,5 @@
-import { getHost, getProtocol, getPort } from ".";
-import { generateJWT, getExpiresIn } from "../authenticators/jwt";
+import { getHost, getProtocol, getPort } from "./env";
+import { generateJWT, getExpiresIn } from "./jwt";
 
 export const getUploadAction = (gitUser: string, repo: string, oid: string) => {
   const host = getHost();

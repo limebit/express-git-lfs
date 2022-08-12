@@ -1,12 +1,12 @@
 import type { Express, Request, Response } from "express";
 import { z } from "zod";
-import { validateAuthorization } from "../utils/auth-middleware";
+import { validateAuthorization } from "../utils/middlewares/auth-middleware";
 import {
   getDownloadAction,
   getUploadAction,
   getVerifyAction,
 } from "../utils/actions";
-import { validateZodSchema } from "../utils/zod-middleware";
+import { validateZodSchema } from "../utils/middlewares/zod-middleware";
 
 const batchRouteSchema = z.object({
   body: z.object({

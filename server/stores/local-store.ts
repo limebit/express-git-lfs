@@ -1,6 +1,6 @@
 import type { Request } from "express";
 import fs from "fs";
-import { getRequiredEnvVar } from "../utils";
+import { getRequiredEnvVar } from "../utils/env";
 import path from "path";
 import type { Store } from ".";
 

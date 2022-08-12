@@ -1,5 +1,5 @@
 import type { Response, Request, NextFunction } from "express";
-import { getAuthenticator, setMissingAuthHeaders } from "../authenticators";
+import { getAuthenticator, setMissingAuthHeaders } from "../../authenticators";
 
 export const validateAuthorization = async (
   req: Request,

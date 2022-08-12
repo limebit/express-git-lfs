@@ -1,6 +1,6 @@
 import { app } from "./servers/express";
 import "dotenv/config";
-import { getPort, getRequiredEnvVar } from "./utils";
+import { getPort, getRequiredEnvVar } from "./utils/env";
 import { sshServer } from "./servers/ssh2";
 
 const port = getPort();

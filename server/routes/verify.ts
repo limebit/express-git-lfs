@@ -1,8 +1,8 @@
 import type { Express, Request, Response } from "express";
 import { z } from "zod";
 import { getStore } from "../stores";
-import { validateZodSchema } from "../utils/zod-middleware";
-import { validateJWT } from "../utils/jwt-middleware";
+import { validateZodSchema } from "../utils/middlewares/zod-middleware";
+import { validateJWT } from "../utils/middlewares/jwt-middleware";
 
 const verifyRouteSchema = z.object({
   body: z.object({

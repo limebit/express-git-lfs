@@ -1,5 +1,5 @@
 import type { Response, Request, NextFunction } from "express";
-import { getRequiredEnvVar } from ".";
+import { getRequiredEnvVar } from "../env";
 import crypto from "crypto";
 
 export const validateApiKey = async (

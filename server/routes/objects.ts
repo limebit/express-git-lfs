@@ -1,8 +1,8 @@
 import type { Express, Request, Response } from "express";
 import { z } from "zod";
-import { validateZodSchema } from "../utils/zod-middleware";
+import { validateZodSchema } from "../utils/middlewares/zod-middleware";
 import { getStore } from "../stores";
-import { validateJWT } from "../utils/jwt-middleware";
+import { validateJWT } from "../utils/middlewares/jwt-middleware";
 
 const objectsRouteSchema = z.object({
   params: z.object({
