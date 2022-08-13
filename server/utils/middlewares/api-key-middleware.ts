@@ -1,5 +1,5 @@
 import type { Response, Request, NextFunction } from "express";
-import { getRequiredEnvVar } from "../env";
+import { env } from "../env";
 import crypto from "crypto";
 
 export const validateApiKey = async (
@@ -19,7 +19,7 @@ export const validateApiKey = async (
 
   const tokenBuffer = Buffer.from(token);
 
-  const apiKeyBuffer = Buffer.from(getRequiredEnvVar("API_KEY"));
+  const apiKeyBuffer = Buffer.from(env.API_KEY);
 
   if (
     tokenBuffer.byteLength === apiKeyBuffer.byteLength &&

@@ -1,12 +1,12 @@
 import jwt from "jsonwebtoken";
-import { getEnvVarWithDefault, getRequiredEnvVar } from "./env";
+import { env } from "./env";
 
 export const getExpiresIn = () => {
-  return parseInt(getEnvVarWithDefault("JWT_EXPIRES_IN", "900"));
+  return env.JWT_EXPIRES_IN;
 };
 
 export const getJWTSecret = () => {
-  return getRequiredEnvVar("JWT_SECRET");
+  return env.JWT_SECRET;
 };
 
 export const generateJWT = <T extends string | object | Buffer>(payload: T) => {

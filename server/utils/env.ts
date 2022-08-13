@@ -1,30 +1,40 @@
-export const getRequiredEnvVar = (envVarName: string): string => {
-  const envVar = process.env[envVarName];
+import "dotenv/config";
+import { z } from "zod";
 
-  if (!envVar) throw new Error(`Environment variable ${envVarName} is not set`);
+const envSchema = z
+  .object({
+    PORT: z.string().default("8000"),
+    HOST: z.string().default("localhost"),
+    PROTOCOL: z.enum(["http", "https"]).default("http"),
 
-  return envVar;
-};
+    DATA_FOLDER: z.string().optional(),
 
-export const getEnvVarWithDefault = (
-  envVarName: string,
-  defaultValue: string
-): string => {
-  const envVar = process.env[envVarName];
+    API_KEY: z.string(),
 
-  if (!envVar) return defaultValue;
+    JWT_SECRET: z.string(),
+    JWT_EXPIRES_IN: z.string().default("900"),
+  })
+  .and(
+    z.discriminatedUnion("SSH_ENABLED", [
+      z.object({
+        SSH_ENABLED: z.literal("true"),
+        SSH_PRIVATE_KEY_PATH: z.string(),
+      }),
+      z.object({ SSH_ENABLED: z.literal("false") }),
+      z.object({ SSH_ENABLED: z.literal(undefined) }),
+    ])
+  );
 
-  return envVar;
-};
+export const env = envSchema.parse(process.env);
 
 export const getProtocol = () => {
-  return getEnvVarWithDefault("PROTOCOL", "http");
+  return env.PROTOCOL;
 };
 
 export const getPort = () => {
-  return parseInt(getEnvVarWithDefault("PORT", "8000"));
+  return env.PORT;
 };
 
 export const getHost = () => {
-  return getEnvVarWithDefault("HOST", "localhost");
+  return env.HOST;
 };

@@ -1,14 +1,13 @@
 import { app } from "./servers/express";
-import "dotenv/config";
-import { getPort, getRequiredEnvVar } from "./utils/env";
-import { sshServer } from "./servers/ssh2";
+import { getPort } from "./utils/env";
+import { createServer } from "./servers/ssh";
 
 const port = getPort();
 
 app.listen(port);
 
-const useSSH = getRequiredEnvVar("SSH_ENABLED");
+const sshServer = createServer();
 
-if (useSSH == "true") {
+if (sshServer) {
   sshServer.listen(22);
 }

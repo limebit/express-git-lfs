@@ -1,7 +1,7 @@
 import type { Request } from "express";
 import fs from "fs";
-import { getRequiredEnvVar } from "../utils/env";
 import path from "path";
+import { env } from "../utils/env";
 import type { Store } from ".";
 
 interface LocalStoreType extends Store {
@@ -29,7 +29,9 @@ export const LocalStore: LocalStoreType = {
     return stats.size;
   },
   getFilePath(gitUser: string, repo: string, oid: string) {
-    const dataFolder = getRequiredEnvVar("DATA_FOLDER");
+    const dataFolder = env.DATA_FOLDER;
+
+    if (!dataFolder) throw Error("DATA_FOLDER not defined");
 
     const pathWithoutFile = path.join(dataFolder, gitUser, repo);
 

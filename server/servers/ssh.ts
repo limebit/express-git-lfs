@@ -6,14 +6,10 @@ import type {
   RejectConnection,
   ExecInfo,
 } from "ssh2";
-import { getHost, getPort, getProtocol, getRequiredEnvVar } from "../utils/env";
+import { env, getHost, getPort, getProtocol } from "../utils/env";
 import fs from "fs";
 import { SSHAuthenticator } from "../authenticators/ssh-authenticator";
 import { generateJWT } from "../utils/jwt";
-
-const sshPrivateKey = fs.readFileSync(
-  getRequiredEnvVar("SSH_PRIVATE_KEY_PATH")
-);
 
 const authenticationHandler = async (ctx: AuthContext) => {
   const username = ctx.username;
@@ -73,9 +69,12 @@ const execHandler = (
   stream.end();
 };
 
-export const sshServer = new ssh2.Server(
-  { hostKeys: [sshPrivateKey] },
-  (client) => {
+export const createServer = () => {
+  if (env.SSH_ENABLED != "true") return undefined;
+
+  const sshPrivateKey = fs.readFileSync(env.SSH_PRIVATE_KEY_PATH);
+
+  return new ssh2.Server({ hostKeys: [sshPrivateKey] }, (client) => {
     client.on("authentication", authenticationHandler).on("ready", () => {
       client.on("session", (accept) => {
         const session = accept();
@@ -83,5 +82,5 @@ export const sshServer = new ssh2.Server(
         session.on("exec", execHandler);
       });
     });
-  }
-);
+  });
+};
