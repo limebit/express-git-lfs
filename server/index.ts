@@ -1,13 +1,13 @@
 import { app } from "./servers/express";
-import { getPort } from "./utils/env";
+import { env } from "./utils/env";
 import { createServer } from "./servers/ssh";
 
-const port = getPort();
+const port = env.PORT;
 
 app.listen(port);
 
 const sshServer = createServer();
 
-if (sshServer) {
-  sshServer.listen(22);
+if (sshServer && env.SSH_ENABLED == "true") {
+  sshServer.listen(env.SSH_PORT);
 }

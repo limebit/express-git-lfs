@@ -3,7 +3,7 @@ import { z } from "zod";
 
 const envSchema = z
   .object({
-    PORT: z.string().default("8000"),
+    PORT: z.string().regex(/^\d+$/).default("8000").transform(Number),
     HOST: z.string().default("localhost"),
     PROTOCOL: z.enum(["http", "https"]).default("http"),
 
@@ -12,13 +12,14 @@ const envSchema = z
     API_KEY: z.string(),
 
     JWT_SECRET: z.string(),
-    JWT_EXPIRES_IN: z.string().default("900"),
+    JWT_EXPIRES_IN: z.string().regex(/^\d+$/).default("900").transform(Number),
   })
   .and(
     z.discriminatedUnion("SSH_ENABLED", [
       z.object({
         SSH_ENABLED: z.literal("true"),
         SSH_PRIVATE_KEY_PATH: z.string(),
+        SSH_PORT: z.string().regex(/^\d+$/).default("22").transform(Number),
       }),
       z.object({ SSH_ENABLED: z.literal("false") }),
       z.object({ SSH_ENABLED: z.literal(undefined) }),
@@ -26,15 +27,3 @@ const envSchema = z
   );
 
 export const env = envSchema.parse(process.env);
-
-export const getProtocol = () => {
-  return env.PROTOCOL;
-};
-
-export const getPort = () => {
-  return env.PORT;
-};
-
-export const getHost = () => {
-  return env.HOST;
-};

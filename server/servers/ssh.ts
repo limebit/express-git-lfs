@@ -6,7 +6,7 @@ import type {
   RejectConnection,
   ExecInfo,
 } from "ssh2";
-import { env, getHost, getPort, getProtocol } from "../utils/env";
+import { env } from "../utils/env";
 import fs from "fs";
 import { SSHAuthenticator } from "../authenticators/ssh-authenticator";
 import { generateJWT } from "../utils/jwt";
@@ -53,9 +53,9 @@ const execHandler = (
 
   const token = generateJWT({ isAuthorized: true });
 
-  const host = getHost();
-  const protocol = getProtocol();
-  const port = getPort();
+  const host = env.HOST;
+  const protocol = env.PROTOCOL;
+  const port = env.PORT;
 
   stream.write(
     JSON.stringify({
