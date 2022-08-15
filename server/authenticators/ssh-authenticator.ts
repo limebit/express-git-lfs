@@ -1,10 +1,12 @@
 import { prisma } from "../utils/prisma";
 import { utils } from "ssh2";
+import type { PublicKeyAuthContext } from "ssh2";
 import { Authenticator, setMissingAuthHeaders } from ".";
 import { verifyJWT } from "../utils/jwt";
+import { timingSafeEqualCheck } from "../utils/crypt";
 
 interface SSHAuthenticatorInterface extends Authenticator {
-  checkSSHAuthentication: (signature: Buffer, blob: Buffer) => Promise<boolean>;
+  checkSSHAuthentication: (ctx: PublicKeyAuthContext) => Promise<boolean>;
 }
 
 export const SSHAuthenticator: SSHAuthenticatorInterface = {
@@ -24,13 +26,25 @@ export const SSHAuthenticator: SSHAuthenticatorInterface = {
 
     return isAuthorized;
   },
-  async checkSSHAuthentication(signature, blob) {
+  async checkSSHAuthentication(ctx) {
     const users = await prisma.user.findMany({ include: { sshKeys: true } });
+
+    const signature = ctx.signature;
+    const blob = ctx.blob;
+    const algo = ctx.key.algo;
 
     const user = users.find((user) =>
       user.sshKeys.some((key) => {
         const parsedKey = utils.parseKey(key.key);
         if (parsedKey instanceof Error) return false;
+
+        if (
+          parsedKey.type != algo ||
+          !timingSafeEqualCheck(ctx.key.data, parsedKey.getPublicSSH())
+        )
+          return false;
+
+        if (!blob || !signature) return true;
 
         return parsedKey.verify(blob, signature);
       })
