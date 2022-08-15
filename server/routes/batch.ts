@@ -1,7 +1,12 @@
 import type { Express, Request, Response } from "express";
 import { z } from "zod";
-import { getDownloadAction, getUploadAction } from "../utils";
-import { validateZodSchema } from "../utils/zod-middleware";
+import { validateAuthorization } from "../utils/middlewares/auth-middleware";
+import {
+  getDownloadAction,
+  getUploadAction,
+  getVerifyAction,
+} from "../utils/actions";
+import { validateZodSchema } from "../utils/middlewares/zod-middleware";
 
 const batchRouteSchema = z.object({
   body: z.object({
@@ -12,19 +17,19 @@ const batchRouteSchema = z.object({
     hash_algo: z.string().optional(),
   }),
   params: z.object({
-    user: z.string(),
+    gitUser: z.string(),
     repo: z.string(),
   }),
 });
 
-const handleBatchRequest = (req: Request, res: Response) => {
+const handleBatchRequest = async (req: Request, res: Response) => {
   res.set("Content-Type", "application/vnd.git-lfs+json");
 
   type reqType = z.infer<typeof batchRouteSchema>;
 
   const { operation, transfers, objects } = req.body as reqType["body"];
 
-  const { user, repo } = req.params as reqType["params"];
+  const { gitUser, repo } = req.params as reqType["params"];
 
   if (transfers && !transfers?.includes("basic")) {
     return res.sendStatus(422);
@@ -35,11 +40,13 @@ const handleBatchRequest = (req: Request, res: Response) => {
     objects: objects.map((object) => {
       let actions: Record<string, { href: string }> = {};
 
-      if (operation === "upload")
-        actions["upload"] = getUploadAction(user, repo, object.oid);
+      if (operation === "upload") {
+        actions["upload"] = getUploadAction(gitUser, repo, object.oid);
+        actions["verify"] = getVerifyAction(gitUser, repo);
+      }
 
       if (operation === "download")
-        actions["download"] = getDownloadAction(user, repo, object.oid);
+        actions["download"] = getDownloadAction(gitUser, repo, object.oid);
 
       return {
         oid: object.oid,
@@ -55,8 +62,9 @@ const handleBatchRequest = (req: Request, res: Response) => {
 
 export const batchRoute = (app: Express) => {
   app.post(
-    "/:user/:repo/objects/batch",
+    "/:gitUser/:repo/objects/batch",
     validateZodSchema(batchRouteSchema),
+    validateAuthorization,
     handleBatchRequest
   );
 };

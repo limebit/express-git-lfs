@@ -3,7 +3,7 @@ FROM node:16-bullseye-slim as base
 ENV NODE_ENV=production
 ENV DATABASE_URL=file:/service/data/database.db
 
-RUN apt-get update && apt-get install -y openssl
+RUN apt-get update && apt-get install -y openssl python3 cmake g++
 
 FROM base as deps
 
