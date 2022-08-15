@@ -3,9 +3,14 @@ services:
   lfs-server:
     build: .
     ports:
-      - 3000:3000
-    env_file:
-      - .env
+      - 8000:8000
     volumes:
-      - "./data:/data"
+      - "./data:/service/data"
+      - "./.ssh:/service/.ssh"
+    environment:
+      - API_KEY=secure_api_key
+      - DATA_FOLDER=/service/data
+      - JWT_SECRET=jwt_sercret
+      - SSH_PRIVATE_KEY_PATH=/service/.ssh/id_rsa
+      - SSH_ENABLED=true
     tty: true

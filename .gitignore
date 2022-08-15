@@ -1,5 +1,7 @@
 node_modules
 .env
+!prisma/.env
 .DS_Store
 build
 data
+.ssh

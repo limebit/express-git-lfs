@@ -1,7 +1,8 @@
 import type { Express, Request, Response } from "express";
 import { z } from "zod";
 import { getStore } from "../stores";
-import { validateZodSchema } from "../utils/zod-middleware";
+import { validateZodSchema } from "../utils/middlewares/zod-middleware";
+import { validateJWT } from "../utils/middlewares/jwt-middleware";
 
 const verifyRouteSchema = z.object({
   body: z.object({
@@ -9,7 +10,7 @@ const verifyRouteSchema = z.object({
     size: z.number(),
   }),
   params: z.object({
-    user: z.string(),
+    gitUser: z.string(),
     repo: z.string(),
   }),
 });
@@ -21,11 +22,11 @@ const handleBatchRequest = (req: Request, res: Response) => {
 
   const { oid, size } = req.body as reqType["body"];
 
-  const { user, repo } = req.params as reqType["params"];
+  const { gitUser, repo } = req.params as reqType["params"];
 
   const store = getStore();
 
-  const fileSize = store.getFileSize(user, repo, oid);
+  const fileSize = store.getFileSize(gitUser, repo, oid);
 
   if (fileSize !== size) return res.status(422).end();
 
@@ -34,8 +35,9 @@ const handleBatchRequest = (req: Request, res: Response) => {
 
 export const verifyRoute = (app: Express) => {
   app.post(
-    "/:user/:repo/verify",
+    "/:gitUser/:repo/verify",
     validateZodSchema(verifyRouteSchema),
+    validateJWT("verify"),
     handleBatchRequest
   );
 };
