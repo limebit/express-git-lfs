@@ -1,4 +1,5 @@
 import bcrypt from "bcryptjs";
+import crypto from "crypto";
 
 export const hashPassword = async (password: string) => {
   const hashedPassword = await bcrypt.hash(password, 10);
@@ -14,3 +15,7 @@ export const validatePassword = async (
 
   return isValid;
 };
+
+export const timingSafeEqualCheck = (input: Buffer, allowed: Buffer) =>
+  input.byteLength === allowed.byteLength &&
+  crypto.timingSafeEqual(input, allowed);

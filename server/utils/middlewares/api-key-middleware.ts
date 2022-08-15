@@ -1,6 +1,6 @@
 import type { Response, Request, NextFunction } from "express";
 import { env } from "../env";
-import crypto from "crypto";
+import { timingSafeEqualCheck } from "../crypt";
 
 export const validateApiKey = async (
   req: Request,
@@ -21,10 +21,7 @@ export const validateApiKey = async (
 
   const apiKeyBuffer = Buffer.from(env.API_KEY);
 
-  if (
-    tokenBuffer.byteLength === apiKeyBuffer.byteLength &&
-    crypto.timingSafeEqual(tokenBuffer, apiKeyBuffer)
-  ) {
+  if (timingSafeEqualCheck(tokenBuffer, apiKeyBuffer)) {
     return next();
   } else {
     return res.sendStatus(403);

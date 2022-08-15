@@ -17,15 +17,7 @@ const authenticationHandler = async (ctx: AuthContext) => {
 
   if (username !== "git" || method !== "publickey") return ctx.reject();
 
-  const signature = ctx.signature;
-  const blob = ctx.blob;
-
-  if (!signature || !blob) return ctx.accept();
-
-  const isAuthenticated = await SSHAuthenticator.checkSSHAuthentication(
-    signature,
-    blob
-  );
+  const isAuthenticated = await SSHAuthenticator.checkSSHAuthentication(ctx);
 
   if (!isAuthenticated) return ctx.reject();
 
