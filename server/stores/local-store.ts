@@ -10,9 +10,26 @@ interface LocalStoreType extends Store {
 
 export const LocalStore: LocalStoreType = {
   put(gitUser: string, repo: string, oid: string, req: Request) {
-    const filePath = this.getFilePath(gitUser, repo, oid);
+    return new Promise((resolve) => {
+      const filePath = this.getFilePath(gitUser, repo, oid);
 
-    req.pipe(fs.createWriteStream(filePath));
+      const file = fs.createWriteStream(filePath);
+
+      req.on("data", (chunk) => {
+        const bufferOK = file.write(chunk);
+
+        if (!bufferOK) req.pause();
+      });
+
+      file.on("drain", () => {
+        req.resume();
+      });
+
+      req.on("end", () => {
+        file.end();
+        resolve();
+      });
+    });
   },
   get(gitUser: string, repo: string, oid: string) {
     const filePath = this.getFilePath(gitUser, repo, oid);

@@ -25,17 +25,29 @@ const handleDownload = (req: Request, res: Response) => {
 
   const readStream = store.get(gitUser, repo, oid);
 
-  readStream.pipe(res);
+  readStream.on("data", (chunk) => {
+    const bufferOK = res.write(chunk);
+
+    if (!bufferOK) req.pause();
+  });
+
+  res.on("drain", () => {
+    readStream.resume();
+  });
+
+  readStream.on("end", () => {
+    res.end();
+  });
 };
 
-const handleUpload = (req: Request, res: Response) => {
+const handleUpload = async (req: Request, res: Response) => {
   type reqType = z.infer<typeof objectsRouteSchema>;
 
   const { gitUser, repo, oid } = req.params as reqType["params"];
 
   const store = getStore();
 
-  store.put(gitUser, repo, oid, req);
+  await store.put(gitUser, repo, oid, req);
 
   return res.sendStatus(200);
 };
