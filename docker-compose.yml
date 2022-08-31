@@ -4,6 +4,7 @@ services:
     build: .
     ports:
       - 8000:8000
+      - 2222:2222
     volumes:
       - "./data:/service/data"
       - "./.ssh:/service/.ssh"
@@ -13,4 +14,5 @@ services:
       - JWT_SECRET=jwt_sercret
       - SSH_PRIVATE_KEY_PATH=/service/.ssh/id_rsa
       - SSH_ENABLED=true
+      - SSH_PORT=2222
     tty: true

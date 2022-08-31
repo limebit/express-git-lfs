@@ -54,7 +54,7 @@ const execHandler = (
       header: {
         Authorization: `Bearer ${token}`,
       },
-      href: `${protocol}://${host}:${port}/${commands[1]}`,
+      href: `${protocol}://${host}:${port}/${commands[1]?.replace(/^\//, "")}`,
     })
   );
   stream.exit(0);
