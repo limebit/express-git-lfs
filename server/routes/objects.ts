@@ -25,17 +25,9 @@ const handleDownload = (req: Request, res: Response) => {
 
   const readStream = store.get(gitUser, repo, oid);
 
-  readStream.on("data", (chunk) => {
-    const bufferOK = res.write(chunk);
+  const stream = readStream.pipe(res);
 
-    if (!bufferOK) req.pause();
-  });
-
-  res.on("drain", () => {
-    readStream.resume();
-  });
-
-  readStream.on("end", () => {
+  stream.on("finish", () => {
     res.end();
   });
 };
