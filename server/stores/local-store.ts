@@ -15,18 +15,9 @@ export const LocalStore: LocalStoreType = {
 
       const file = fs.createWriteStream(filePath);
 
-      req.on("data", (chunk) => {
-        const bufferOK = file.write(chunk);
+      const stream = req.pipe(file);
 
-        if (!bufferOK) req.pause();
-      });
-
-      file.on("drain", () => {
-        req.resume();
-      });
-
-      req.on("end", () => {
-        file.end();
+      stream.on("finish", () => {
         resolve();
       });
     });
