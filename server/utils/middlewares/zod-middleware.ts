@@ -1,17 +1,18 @@
-import type { Response, Request, NextFunction } from "express";
-import type { AnyZodObject } from "zod";
+import type { Response, Request, NextFunction, RequestHandler } from "express";
+import type { ParamsDictionary } from "express-serve-static-core";
+import type { z } from "zod";
 
 export const validateZodSchema =
-  <T extends AnyZodObject>(schema: T) =>
+  <T extends z.Schema, P extends ParamsDictionary, ResBody>(
+    schema: T
+  ): RequestHandler<P, ResBody, z.infer<T>> =>
   async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      await schema.parseAsync({
-        body: req.body,
-        query: req.query,
-        params: req.params,
-      });
+    const result = await schema.safeParseAsync(req.body);
+
+    if (result.success) {
+      req.body = result.data;
       return next();
-    } catch (err) {
-      return res.status(422).json(err);
+    } else {
+      return res.status(422).json(result.error);
     }
   };
