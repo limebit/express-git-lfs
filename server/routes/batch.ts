@@ -44,7 +44,7 @@ const handleBatchRequest = async (
 
       if (operation === "upload") {
         actions["upload"] = getUploadAction(gitUser, repo, object.oid);
-        actions["verify"] = getVerifyAction(gitUser, repo, object.oid);
+        actions["verify"] = getVerifyAction(gitUser, repo);
       }
 
       if (operation === "download")
