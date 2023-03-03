@@ -1,15 +1,18 @@
-import type { Response, Request, NextFunction } from "express";
+import type { Response, NextFunction } from "express";
 import { verifyJWT } from "../jwt";
-import type { JWTPayload } from "../../../types";
+import type { JWTPayload, TypedRequest } from "../../../types";
+import type { z } from "zod";
 
 export const validateJWT =
-  (action: "upload" | "download" | "verify") =>
-  async (req: Request, res: Response, next: NextFunction) => {
-    const { gitUser, repo, oid } = req.params as {
-      gitUser: string;
-      repo: string;
-      oid?: string;
-    };
+  <
+    T extends z.Schema<{
+      params: { gitUser: string; repo: string; oid?: string };
+    }>
+  >(
+    action: "upload" | "download" | "verify"
+  ) =>
+  async (req: TypedRequest<T>, res: Response, next: NextFunction) => {
+    const { gitUser, repo, oid } = req.params;
 
     const authorizationHeader = req.header("Authorization");
 

@@ -43,19 +43,20 @@ export const getDownloadAction = (
   };
 };
 
-export const getVerifyAction = (gitUser: string, repo: string) => {
+export const getVerifyAction = (gitUser: string, repo: string, oid: string) => {
   const host = env.HOST;
   const protocol = env.PROTOCOL;
   const port = env.PORT;
 
   return {
-    href: `${protocol}://${host}:${port}/${gitUser}/${repo}/verify`,
+    href: `${protocol}://${host}:${port}/${gitUser}/${repo}/verify/${oid}`,
     expires_in: env.JWT_EXPIRES_IN,
     header: {
       Authorization: `Bearer ${generateJWT({
         gitUser,
         repo,
         action: "verify",
+        oid,
       })}`,
     },
   };
