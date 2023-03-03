@@ -5,5 +5,4 @@
     "editorconfig.editorconfig",
     "esbenp.prettier-vscode"
   ],
-  "unwantedRecommendations": ["hookyqr.beautify", "dbaeumer.jshint"]
 }
