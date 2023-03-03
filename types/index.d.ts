@@ -8,8 +8,14 @@ export interface JWTPayload {
   oid?: string;
 }
 
+export type ExpressRequestSchema = z.Schema<{
+  params?: any;
+  body?: any;
+  query?: any;
+}>;
+
 export type TypedRequest<
-  T extends z.Schema<{ params?: any; body?: any; query?: any }>,
+  T extends ExpressRequestSchema,
   ResBody = any
 > = Request<
   z.infer<T>["params"],

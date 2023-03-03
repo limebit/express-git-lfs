@@ -1,8 +1,8 @@
 import type { Response, Request, NextFunction } from "express";
-import type { z } from "zod";
+import type { ExpressRequestSchema } from "../../../types";
 
 export const validateZodSchema =
-  <T extends z.Schema<{ params?: any; body?: any; query?: any }>>(schema: T) =>
+  <T extends ExpressRequestSchema>(schema: T) =>
   async (req: Request, res: Response, next: NextFunction) => {
     const result = await schema.safeParseAsync({
       params: req.params,
