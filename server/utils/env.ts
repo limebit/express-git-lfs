@@ -11,6 +11,11 @@ const envSchema = z
 
     API_KEY: z.string(),
 
+    DISABLE_AUTHENTICATION: z
+      .enum(["true", "false"])
+      .default("false")
+      .transform((arg) => arg === "true"),
+
     JWT_SECRET: z.string(),
     JWT_EXPIRES_IN: z.string().regex(/^\d+$/).default("900").transform(Number),
   })
