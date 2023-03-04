@@ -1,4 +1,3 @@
-import type { Request } from "express";
 import fs from "fs";
 import path from "path";
 import { env } from "../utils/env";
@@ -9,18 +8,10 @@ interface LocalStoreType extends Store {
 }
 
 export const LocalStore: LocalStoreType = {
-  put(gitUser: string, repo: string, oid: string, req: Request) {
-    return new Promise((resolve) => {
-      const filePath = this.getFilePath(gitUser, repo, oid);
+  put(gitUser: string, repo: string, oid: string) {
+    const filePath = this.getFilePath(gitUser, repo, oid);
 
-      const file = fs.createWriteStream(filePath);
-
-      const stream = req.pipe(file);
-
-      stream.on("finish", () => {
-        resolve();
-      });
-    });
+    return fs.createWriteStream(filePath);
   },
   get(gitUser: string, repo: string, oid: string) {
     const filePath = this.getFilePath(gitUser, repo, oid);
