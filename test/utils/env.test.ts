@@ -166,6 +166,64 @@ describe("Env Utils", () => {
       }).toThrow();
     });
   });
+
+  describe("SSH_ENABLED Env Variable", () => {
+    test("SSH_ENABLED can be enabled and dependents can be correctly set", () => {
+      process.env.SSH_ENABLED = "true";
+      process.env.SSH_PRIVATE_KEY_PATH = "path";
+      process.env.SSH_PORT = "30";
+
+      const { env } = require("../../server/utils/env");
+
+      expect(env.SSH_ENABLED).toBe("true");
+      expect(env.SSH_PRIVATE_KEY_PATH).toBe("path");
+      expect(env.SSH_PORT).toBe(30);
+    });
+
+    test("SSH_ENABLED can be disabled and dependents are not set", () => {
+      process.env.SSH_ENABLED = "false";
+      process.env.SSH_PRIVATE_KEY_PATH = "path";
+      process.env.SSH_PORT = "30";
+
+      const { env } = require("../../server/utils/env");
+
+      expect(env.SSH_ENABLED).toBe("false");
+      expect(env.SSH_PRIVATE_KEY_PATH).toBe(undefined);
+      expect(env.SSH_PORT).toBe(undefined);
+    });
+
+    test("SSH_ENABLED can be unset and dependents are not set", () => {
+      process.env.SSH_ENABLED = undefined;
+      process.env.SSH_PRIVATE_KEY_PATH = "path";
+      process.env.SSH_PORT = "30";
+
+      const { env } = require("../../server/utils/env");
+
+      expect(env.SSH_ENABLED).toBe(undefined);
+      expect(env.SSH_PRIVATE_KEY_PATH).toBe(undefined);
+      expect(env.SSH_PORT).toBe(undefined);
+    });
+
+    test("SSH_PORT has correct default value", () => {
+      process.env.SSH_ENABLED = "true";
+      process.env.SSH_PRIVATE_KEY_PATH = "path";
+
+      const { env } = require("../../server/utils/env");
+
+      expect(env.SSH_ENABLED).toBe("true");
+      expect(env.SSH_PRIVATE_KEY_PATH).toBe("path");
+      expect(env.SSH_PORT).toBe(22);
+    });
+
+    test("SSH_ENABLED throws error if SSH_PRIVATE_KEY_PATH is not set", () => {
+      process.env.SSH_ENABLED = "true";
+      process.env.SSH_PRIVATE_KEY_PATH = undefined;
+
+      expect(() => {
+        require("../../server/utils/env");
+      }).toThrow();
+    });
+  });
 });
 
 export {};
