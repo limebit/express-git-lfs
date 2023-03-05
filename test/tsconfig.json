@@ -3,11 +3,4 @@
   "include": [
     "./**/*"
   ],
-  "compilerOptions": {
-    "paths": {
-      "~/*": [
-        "../server/*"
-      ]
-    }
-  }
 }
