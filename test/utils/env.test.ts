@@ -107,11 +107,11 @@ describe("Env Utils", () => {
 
   describe("API_KEY Env Variable", () => {
     test("API_KEY can be correctly set", () => {
-      process.env.API_KEY = "api_key";
+      process.env.API_KEY = "key";
 
       const { env } = require("../../server/utils/env");
 
-      expect(env.API_KEY).toBe("api_key");
+      expect(env.API_KEY).toBe("key");
     });
 
     test("API_KEY throws error if API_KEY is not set", () => {
@@ -125,11 +125,11 @@ describe("Env Utils", () => {
 
   describe("JWT_SECRET Env Variable", () => {
     test("JWT_SECRET can be correctly set", () => {
-      process.env.JWT_SECRET = "jwt_secret";
+      process.env.JWT_SECRET = "key";
 
       const { env } = require("../../server/utils/env");
 
-      expect(env.JWT_SECRET).toBe("jwt_secret");
+      expect(env.JWT_SECRET).toBe("key");
     });
 
     test("JWT_SECRET throws error if JWT_SECRET is not set", () => {

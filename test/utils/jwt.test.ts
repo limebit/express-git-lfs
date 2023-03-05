@@ -12,7 +12,7 @@ describe("JWT Utils", () => {
       const token = generateJWT(payload);
 
       expect(token).toBe(
-        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY3Rpb24iOiJ0ZXN0IiwiaWF0IjoxNjc3OTcwLCJleHAiOjE2Nzg4NzB9.0IxQyH2aDIP9P4r6fNIreWjCpyF7l0pHxvhosz-ck3Q"
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY3Rpb24iOiJ0ZXN0IiwiaWF0IjoxNjc3OTcwLCJleHAiOjE2Nzg4NzB9.X7J4Yj12_Sk7L-iEgz_Ag_HM7mwnEK5CfC8GG3ZoM64"
       );
     });
   });

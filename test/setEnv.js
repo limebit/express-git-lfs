@@ -6,7 +6,7 @@ process.env.DATA_FOLDER = "data_folder";
 
 process.env.API_KEY = "api_key";
 
-process.env.JWT_SECRET = "secret";
+process.env.JWT_SECRET = "jwt_secret";
 process.env.JWT_EXPIRES_IN = "900";
 
 process.env.SSH_ENABLED = "true";

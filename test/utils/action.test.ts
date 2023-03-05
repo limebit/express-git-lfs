@@ -26,7 +26,7 @@ describe("Actions Utils", () => {
       expires_in: 900,
       header: {
         Authorization:
-          "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJnaXRVc2VyIjoidXNlciIsInJlcG8iOiJyZXBvIiwiYWN0aW9uIjoidXBsb2FkIiwib2lkIjoiMTUiLCJpYXQiOjE2Nzc5NzAsImV4cCI6MTY3ODg3MH0.b1MBJB3lbmwQ9qPuOxReIgEPnDFm6EZUWJEaFKFXhvM",
+          "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJnaXRVc2VyIjoidXNlciIsInJlcG8iOiJyZXBvIiwiYWN0aW9uIjoidXBsb2FkIiwib2lkIjoiMTUiLCJpYXQiOjE2Nzc5NzAsImV4cCI6MTY3ODg3MH0.q3sqZbuQQ1PrUdVseO8h4nGxuBYmasqwItX_0tYVo44",
       },
     });
     expect(authorizationHeader.length).toBe(2);
@@ -56,7 +56,7 @@ describe("Actions Utils", () => {
       expires_in: 900,
       header: {
         Authorization:
-          "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJnaXRVc2VyIjoidXNlciIsInJlcG8iOiJyZXBvIiwiYWN0aW9uIjoiZG93bmxvYWQiLCJvaWQiOiIxNSIsImlhdCI6MTY3Nzk3MCwiZXhwIjoxNjc4ODcwfQ._qPCx-n6d4TUOw7iwFK7jZ6tCvJYTgOzgT5EnFuISPU",
+          "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJnaXRVc2VyIjoidXNlciIsInJlcG8iOiJyZXBvIiwiYWN0aW9uIjoiZG93bmxvYWQiLCJvaWQiOiIxNSIsImlhdCI6MTY3Nzk3MCwiZXhwIjoxNjc4ODcwfQ.cbzUv0FTYH3mcz2nl1Y_9Kf_zb4_qZs8kuTGivMyDVg",
       },
     });
     expect(authorizationHeader.length).toBe(2);
@@ -85,7 +85,7 @@ describe("Actions Utils", () => {
       expires_in: 900,
       header: {
         Authorization:
-          "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJnaXRVc2VyIjoidXNlciIsInJlcG8iOiJyZXBvIiwiYWN0aW9uIjoidmVyaWZ5IiwiaWF0IjoxNjc3OTcwLCJleHAiOjE2Nzg4NzB9.8KWdxQZ-JOc-Sl-I7urgoRYKZChqxwbJ2MnwoLG_gyY",
+          "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJnaXRVc2VyIjoidXNlciIsInJlcG8iOiJyZXBvIiwiYWN0aW9uIjoidmVyaWZ5IiwiaWF0IjoxNjc3OTcwLCJleHAiOjE2Nzg4NzB9.PRLusomJ2I9BcBrI-d5YPeOeW8RsI-iHg7Usbc5btKM",
       },
     });
     expect(authorizationHeader.length).toBe(2);
