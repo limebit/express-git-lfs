@@ -4,6 +4,7 @@ import { validateZodSchema } from "../../utils/middlewares/zod-middleware";
 import { prisma } from "../../utils/prisma";
 import { hashPassword } from "../../utils/crypt";
 import { validateApiKey } from "../../utils/middlewares/api-key-middleware";
+import type { TypedRequest } from "../../../types";
 
 const handleGetAllUsers = async (_req: Request, res: Response) => {
   const rawUsers = await prisma.user.findMany({
@@ -26,10 +27,11 @@ const handleCreateUserSchema = z.object({
   }),
 });
 
-const handleCreateUser = async (req: Request, res: Response) => {
-  type reqType = z.infer<typeof handleCreateUserSchema>;
-
-  const { username, password, sshKeys } = req.body as reqType["body"];
+const handleCreateUser = async (
+  req: TypedRequest<typeof handleCreateUserSchema>,
+  res: Response
+) => {
+  const { username, password, sshKeys } = req.body;
 
   const userId = await prisma.user.findFirst({
     where: { username: username },
@@ -59,10 +61,11 @@ const handleGetUserSchema = z.object({
   }),
 });
 
-const handleGetUser = async (req: Request, res: Response) => {
-  type reqType = z.infer<typeof handleGetUserSchema>;
-
-  const { userId } = req.params as reqType["params"];
+const handleGetUser = async (
+  req: TypedRequest<typeof handleGetUserSchema>,
+  res: Response
+) => {
+  const { userId } = req.params;
 
   const userProfile = await prisma.user.findFirst({
     where: { id: userId },
@@ -90,12 +93,13 @@ const handlePutUserSchema = z.object({
   }),
 });
 
-const handlePutUser = async (req: Request, res: Response) => {
-  type reqType = z.infer<typeof handlePutUserSchema>;
+const handlePutUser = async (
+  req: TypedRequest<typeof handlePutUserSchema>,
+  res: Response
+) => {
+  const { userId } = req.params;
 
-  const { userId } = req.params as reqType["params"];
-
-  const { username, password, sshKeys } = req.body as reqType["body"];
+  const { username, password, sshKeys } = req.body;
 
   const user = await prisma.user.findFirst({
     where: { id: userId },
@@ -129,10 +133,11 @@ const handleDeleteUserSchema = z.object({
   }),
 });
 
-export const handleDeleteUser = async (req: Request, res: Response) => {
-  type reqType = z.infer<typeof handleDeleteUserSchema>;
-
-  const { userId } = req.params as reqType["params"];
+export const handleDeleteUser = async (
+  req: TypedRequest<typeof handleDeleteUserSchema>,
+  res: Response
+) => {
+  const { userId } = req.params;
 
   const user = await prisma.user.findFirst({
     where: { id: userId },

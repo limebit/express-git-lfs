@@ -1,8 +1,9 @@
-import type { Express, Request, Response } from "express";
+import type { Express, Response } from "express";
 import { z } from "zod";
 import { getStore } from "../stores";
 import { validateZodSchema } from "../utils/middlewares/zod-middleware";
 import { validateJWT } from "../utils/middlewares/jwt-middleware";
+import type { TypedRequest } from "../../types";
 
 const verifyRouteSchema = z.object({
   body: z.object({
@@ -15,14 +16,15 @@ const verifyRouteSchema = z.object({
   }),
 });
 
-const handleBatchRequest = (req: Request, res: Response) => {
+const handleVerifyRequest = (
+  req: TypedRequest<typeof verifyRouteSchema>,
+  res: Response
+) => {
   res.set("Content-Type", "application/vnd.git-lfs+json");
 
-  type reqType = z.infer<typeof verifyRouteSchema>;
+  const { oid, size } = req.body;
 
-  const { oid, size } = req.body as reqType["body"];
-
-  const { gitUser, repo } = req.params as reqType["params"];
+  const { gitUser, repo } = req.params;
 
   const store = getStore();
 
@@ -37,7 +39,7 @@ export const verifyRoute = (app: Express) => {
   app.post(
     "/:gitUser/:repo/verify",
     validateZodSchema(verifyRouteSchema),
-    validateJWT("verify"),
-    handleBatchRequest
+    validateJWT<typeof verifyRouteSchema>("verify"),
+    handleVerifyRequest
   );
 };
