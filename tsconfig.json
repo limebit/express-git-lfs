@@ -1,9 +1,18 @@
 {
   "files": [],
-  "exclude": ["node_modules"],
+  "exclude": [
+    "node_modules"
+  ],
   "extends": "./config/shared-tsconfig.json",
   "references": [
-    { "path": "types" },
-    { "path": "server" },
+    {
+      "path": "types"
+    },
+    {
+      "path": "server"
+    },
+    {
+      "path": "test"
+    },
   ]
 }
