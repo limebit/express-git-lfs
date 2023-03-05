@@ -203,7 +203,6 @@ describe("Env Utils", () => {
 
     test("SSH_PORT has correct default value", async () => {
       process.env.SSH_ENABLED = "true";
-      process.env.SSH_PRIVATE_KEY_PATH = "path";
 
       const { env } = await import("../../server/utils/env");
 
@@ -211,7 +210,6 @@ describe("Env Utils", () => {
       if (env.SSH_ENABLED !== "true") {
         fail("I have failed you!");
       }
-      expect(env.SSH_PRIVATE_KEY_PATH).toBe("path");
       expect(env.SSH_PORT).toBe(22);
     });
 
