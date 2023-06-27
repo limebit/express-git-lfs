@@ -2,5 +2,5 @@
   "extends": "../config/shared-tsconfig.json",
   "include": [
     "./**/*"
-  ]
+  ],
 }
