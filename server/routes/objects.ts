@@ -11,7 +11,6 @@ const objectsRouteSchema = z.object({
     repo: z.string(),
     oid: z.string(),
   }),
-  body: z.object({ test: z.string() }),
 });
 
 const handleDownload = (
